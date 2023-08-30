@@ -8,5 +8,7 @@ class Customer:
         self.wallet_balance -= input_amount
     def increase_energy_level(self, input_amount):
         self.energy_level += input_amount
+    def reduce_energy_level(self, input_amount):
+        self.energy_level -= input_amount    
     def purchase_drink(self, drink):
         self.wallet_balance -= drink.price

@@ -6,14 +6,16 @@ from src.food import Food
 
 class TestCoffeeShop(unittest.TestCase):
     def setUp(self):
-        self.coffee_shop = CoffeeShop("Ben's Coffee Shop", 100, [
-            Drink("Long Black", 3, 10), 
-            Drink("Flat White", 4, 12), 
-            Drink("Cappuccino", 5, 9)
-            ],
-            [
-            Food("Ham Sandwich", 10, 7)
-        ]
+        self.long_black = Drink("Long Black", 3, 10)
+        self.flat_white = Drink("Flat White", 4, 12)
+        self.cappuccino = Drink("Cappuccino", 5, 9)
+        self.ham_sandwich = Food("Ham Sandwich", 10, 7)
+        self.coffee_shop = CoffeeShop("Ben's Coffee Shop", 100, {
+            self.long_black : 4,
+            self.flat_white : 0,
+            self.cappuccino : 6,
+            },
+            {self.ham_sandwich : 3}
     )
         self.customer_john = Customer("John", 50, 15, 60)
         self.customer_clive = Customer("Clive", 10, 30, 98)
@@ -23,24 +25,32 @@ class TestCoffeeShop(unittest.TestCase):
         self.assertEqual("Ben's Coffee Shop", self.coffee_shop.name)
     
     def test_drink_has_name(self):
-        self.assertEqual("Cappuccino", self.coffee_shop.drinks_menu[2].name)
+        self.assertEqual("Cappuccino", self.cappuccino.name)
+
+    def test_if_drink_is_in_stock(self):
+        self.assertGreater(self.coffee_shop.drinks_menu[self.long_black], 0)
+        self.assertEqual(self.coffee_shop.drinks_menu[self.flat_white], 0)
     
     def test_drinks_sale_to_customer(self):
-        self.coffee_shop.sell_drink_to_customer(self.coffee_shop.drinks_menu[1], self.customer_clive)
-        self.assertEqual(6, self.customer_clive.wallet_balance)
-        self.assertEqual(104, self.coffee_shop.till_balance)
-        self.assertEqual(110, self.customer_clive.energy_level)
+        self.coffee_shop.sell_drink_to_customer(self.long_black, self.customer_clive)
+        self.assertEqual(7, self.customer_clive.wallet_balance)
+        self.assertEqual(103, self.coffee_shop.till_balance)
+        self.assertEqual(108, self.customer_clive.energy_level)
     
     def test_refused_drinks_sales(self):
-        self.coffee_shop.sell_drink_to_customer(self.coffee_shop.drinks_menu[0], self.customer_john)
-        self.coffee_shop.sell_drink_to_customer(self.coffee_shop.drinks_menu[2], self.customer_scruffy)
-        self.coffee_shop.sell_drink_to_customer(self.coffee_shop.drinks_menu[0], self.customer_clive)
-        self.coffee_shop.sell_drink_to_customer(self.coffee_shop.drinks_menu[0], self.customer_clive)
+        self.coffee_shop.sell_drink_to_customer(self.long_black, self.customer_john)
+        self.coffee_shop.sell_drink_to_customer(self.cappuccino, self.customer_scruffy)
+        self.coffee_shop.sell_drink_to_customer(self.long_black, self.customer_clive)
+        self.coffee_shop.sell_drink_to_customer(self.long_black, self.customer_clive)
         self.assertEqual(103, self.coffee_shop.till_balance)
 
     def test_food_sale_to_customer(self):
-        self.coffee_shop.sell_food_to_customer(self.coffee_shop.food_menu[0], self.customer_clive)
+        self.coffee_shop.sell_food_to_customer(self.ham_sandwich, self.customer_clive)
         self.assertEqual(0, self.customer_clive.wallet_balance)
         self.assertEqual(110, self.coffee_shop.till_balance)
         self.assertEqual(91, self.customer_clive.energy_level)
-    
+
+    def test_calculate_stock_value(self):
+        self.assertEqual(42, self.coffee_shop.calculate_stock_value())
+        self.coffee_shop.drinks_menu[self.flat_white] = 2
+        self.assertEqual(50, self.coffee_shop.calculate_stock_value())

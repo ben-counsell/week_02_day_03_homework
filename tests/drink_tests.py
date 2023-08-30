@@ -8,5 +8,6 @@ class TestDrink(unittest.TestCase):
         self.cappuccino = Drink("Cappuccino", 5, 9)
     def test_that_drink_has_price(self):
         self.assertEqual(3, self.long_black.price)
+        
     def test_that_drink_has_caffeine_level(self):
         self.assertEqual(10, self.long_black.caffeine_level)
